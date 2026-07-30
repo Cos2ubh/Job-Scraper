@@ -1,0 +1,25 @@
+.kanban-col {
+  min-height: 400px;
+}
+.kanban-card {
+  cursor: grab;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.dragging {
+  opacity: 0.4;
+}
+.kanban-col.drop-target {
+  outline: 2px dashed #6366f1;
+  outline-offset: -6px;
+  background-color: #eef2ff;
+}
+.match-badge-high { background: #dcfce7; color: #166534; }
+.match-badge-mid  { background: #fef9c3; color: #854d0e; }
+.match-badge-low  { background: #fee2e2; color: #991b1b; }
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

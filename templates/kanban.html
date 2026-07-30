@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Kanban — JobTracker{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+  <div>
+    <h1 class="text-2xl font-bold">Application Kanban</h1>
+    <p class="text-sm text-slate-500">Drag cards between columns, or use the status dropdown.</p>
+  </div>
+  <button id="add-job-btn"
+    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-md shadow-sm">
+    + Add Job Manually
+  </button>
+</div>
+
+<div id="board" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+  <!-- populated by kanban.js -->
+</div>
+
+<!-- Add-job modal -->
+<div id="modal-root"
+     class="fixed inset-0 bg-slate-900/50 z-40 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+    <h2 class="text-lg font-semibold mb-4">Add a Job to Track</h2>
+    <form id="add-job-form" class="space-y-3 text-sm">
+      <div>
+        <label class="block text-slate-600 mb-1">Job Title *</label>
+        <input name="title" required class="w-full border rounded-md px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-slate-600 mb-1">Company *</label>
+        <input name="company" required class="w-full border rounded-md px-3 py-2" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-slate-600 mb-1">Salary Range</label>
+          <input name="salary" placeholder="$120k - $150k" class="w-full border rounded-md px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-slate-600 mb-1">Date Applied</label>
+          <input name="date_applied" type="date" class="w-full border rounded-md px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-slate-600 mb-1">Job URL</label>
+        <input name="url" type="url" placeholder="https://…" class="w-full border rounded-md px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-slate-600 mb-1">Status</label>
+        <select name="status" class="w-full border rounded-md px-3 py-2">
+          <option value="to_apply">To Apply</option>
+          <option value="applied">Applied</option>
+          <option value="interviewing">Interviewing</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-slate-600 mb-1">Notes</label>
+        <textarea name="notes" rows="3" class="w-full border rounded-md px-3 py-2"></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="cancel-btn"
+          class="px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/kanban.js') }}"></script>
+{% endblock %}
