@@ -9,6 +9,8 @@ from .arbeitnow import ArbeitnowScraper
 from .base import JobPosting
 from .hackernews import HackerNewsScraper
 from .remoteok import RemoteOKScraper
+from .remotive import RemotiveScraper
+from .themuse import TheMuseScraper
 from .weworkremotely import WeWorkRemotelyScraper
 
 logger = logging.getLogger(__name__)
@@ -17,6 +19,8 @@ SCRAPERS = [
     RemoteOKScraper(),
     WeWorkRemotelyScraper(),
     ArbeitnowScraper(),
+    RemotiveScraper(),
+    TheMuseScraper(),
     HackerNewsScraper(),
 ]
 
