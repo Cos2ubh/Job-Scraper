@@ -8,6 +8,7 @@ VALID_STATUSES = ("to_apply", "applied", "interviewing", "offer", "rejected")
 VALID_REMOTE_TYPES = ("remote", "onsite", "hybrid", "unknown")
 VALID_EXPERIENCE_LEVELS = ("fresher", "mid", "senior", "unknown")
 VALID_CATEGORIES = ("technical", "design", "product", "business", "other")
+VALID_ACCESSIBILITY = ("accessible", "paywalled")
 
 
 class ScrapedJob(db.Model):
@@ -25,6 +26,7 @@ class ScrapedJob(db.Model):
     remote_type = db.Column(db.String(16), nullable=False, default="unknown", index=True)
     experience_level = db.Column(db.String(16), nullable=False, default="unknown", index=True)
     category = db.Column(db.String(16), nullable=False, default="other", index=True)
+    accessibility = db.Column(db.String(16), nullable=False, default="accessible", index=True)
     salary = db.Column(db.String(255))
     tags = db.Column(db.String(500))
     description = db.Column(db.Text)
@@ -43,6 +45,7 @@ class ScrapedJob(db.Model):
             "remote_type": self.remote_type or "unknown",
             "experience_level": self.experience_level or "unknown",
             "category": self.category or "other",
+            "accessibility": self.accessibility or "accessible",
             "salary": self.salary,
             "tags": [t for t in (self.tags or "").split(",") if t],
             "description": self.description,

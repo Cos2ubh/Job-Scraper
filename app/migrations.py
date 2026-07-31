@@ -9,6 +9,7 @@ backfilled using the classifier.
 import logging
 from sqlalchemy import inspect, text
 
+from .accessibility import classify_accessibility
 from .classifier import classify_category, classify_experience
 from .database import db
 
@@ -61,6 +62,27 @@ def _backfill_experience_and_category() -> None:
             logger.exception("backfill commit failed")
 
 
+def _backfill_accessibility() -> None:
+    from .models import ScrapedJob
+    rows = ScrapedJob.query.all()
+    if not rows:
+        return
+    logger.info("migration: backfilling accessibility for %d rows", len(rows))
+    updated = 0
+    for row in rows:
+        new_val = classify_accessibility(row.url or "", row.description or "")
+        if row.accessibility != new_val:
+            row.accessibility = new_val
+            updated += 1
+    if updated:
+        try:
+            db.session.commit()
+            logger.info("migration: backfilled accessibility for %d rows", updated)
+        except Exception:
+            db.session.rollback()
+            logger.exception("accessibility backfill commit failed")
+
+
 def run_migrations() -> None:
     inspector = inspect(db.engine)
     tables = set(inspector.get_table_names())
@@ -79,7 +101,15 @@ def run_migrations() -> None:
         "scraped_jobs", "category",
         "VARCHAR(16) NOT NULL DEFAULT 'other'",
     )
+    added_access = _ensure_column(
+        "scraped_jobs", "accessibility",
+        "VARCHAR(16) NOT NULL DEFAULT 'accessible'",
+    )
 
     if added_exp or added_cat:
         _backfill_experience_and_category()
+    # Accessibility runs every startup — the classifier evolves as we spot
+    # false positives / new paywall domains, and the check is cheap (URL scan).
+    _backfill_accessibility()
     _ = added_remote  # kept for readability; no backfill needed for remote_type
+    _ = added_access

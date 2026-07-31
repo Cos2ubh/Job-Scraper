@@ -8,6 +8,8 @@
   const expEl    = document.getElementById("filter-experience");
   const catEl    = document.getElementById("filter-category");
   const daysEl   = document.getElementById("filter-days");
+  const paywallEl= document.getElementById("filter-include-paywalled");
+  const hintEl   = document.getElementById("paywall-hint");
 
   const REMOTE_BADGE = {
     remote:  { label: "Remote",  cls: "bg-emerald-100 text-emerald-800" },
@@ -46,6 +48,7 @@
     if (remoteEl.value)      params.set("remote_type", remoteEl.value);
     if (expEl.value)         params.set("experience_level", expEl.value);
     if (catEl.value)         params.set("category", catEl.value);
+    if (paywallEl.checked)   params.set("include_paywalled", "1");
     params.set("limit", "100");
 
     listEl.innerHTML = `<div class="text-slate-500 text-center py-8">Loading…</div>`;
@@ -53,6 +56,14 @@
       const data = await api.get(`/api/jobs?${params.toString()}`);
       renderJobs(data.jobs || []);
       metaEl.textContent = `Showing ${data.count} of ${data.total} scraped jobs.`;
+      if (data.paywalled_hidden > 0 && !paywallEl.checked) {
+        hintEl.textContent =
+          `${data.paywalled_hidden} paywalled job(s) hidden — they require a paid subscription (e.g. FlexJobs, TheLadders). ` +
+          `Tick "Show subscription-required jobs" to include them.`;
+        hintEl.classList.remove("hidden");
+      } else {
+        hintEl.classList.add("hidden");
+      }
     } catch (err) {
       listEl.innerHTML = `<div class="text-rose-600 text-center py-8">Failed to load jobs.</div>`;
     }
@@ -94,16 +105,27 @@
       ? `<span class="text-xs font-semibold px-2 py-1 rounded ${cat.cls}">${cat.label}</span>`
       : "";
 
+    const paywallBadge = job.accessibility === "paywalled"
+      ? `<span title="Requires a paid subscription (e.g. FlexJobs, TheLadders) to apply"
+              class="text-xs font-semibold px-2 py-1 rounded bg-rose-600 text-white">
+           Subscription
+         </span>`
+      : "";
+    const cardExtraCls = job.accessibility === "paywalled"
+      ? "border-l-4 border-rose-500 opacity-90"
+      : "";
+
     const tags = (job.tags || []).slice(0, 6).map(t =>
       `<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${escapeHtml(t)}</span>`
     ).join("");
 
     return `
-      <article class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 hover:shadow-md transition">
+      <article class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 hover:shadow-md transition ${cardExtraCls}">
         <div class="flex items-start justify-between gap-4 flex-wrap">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
               <h3 class="font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(job.title)}</h3>
+              ${paywallBadge}
               ${catBadge}
               ${remoteBadge}
               ${expBadge}
@@ -176,10 +198,11 @@
   scrapeBtn.addEventListener("click", runScrape);
   qEl.addEventListener("input",       debounce(loadJobs, 300));
   compEl.addEventListener("input",    debounce(loadJobs, 300));
-  remoteEl.addEventListener("change", loadJobs);
-  expEl.addEventListener("change",    loadJobs);
-  catEl.addEventListener("change",    loadJobs);
-  daysEl.addEventListener("change",   loadJobs);
+  remoteEl.addEventListener("change",  loadJobs);
+  expEl.addEventListener("change",     loadJobs);
+  catEl.addEventListener("change",     loadJobs);
+  daysEl.addEventListener("change",    loadJobs);
+  paywallEl.addEventListener("change", loadJobs);
 
   loadJobs();
 })();

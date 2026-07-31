@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from ..accessibility import classify_accessibility
 from ..classifier import classify_category, classify_experience
 from ..database import db
 from ..models import ScrapedJob
@@ -30,6 +31,7 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
         posting.title or "", posting.description or "", posting.tags or []
     )
     category = classify_category(posting.title or "", posting.tags or [])
+    accessibility = classify_accessibility(posting.url or "", posting.description or "")
 
     if existing:
         changed = False
@@ -40,6 +42,7 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
             ("remote_type", posting.remote_type or "unknown"),
             ("experience_level", experience_level),
             ("category", category),
+            ("accessibility", accessibility),
             ("salary", posting.salary),
             ("description", posting.description),
             ("url", posting.url),
@@ -60,6 +63,7 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
         remote_type=posting.remote_type or "unknown",
         experience_level=experience_level,
         category=category,
+        accessibility=accessibility,
         salary=posting.salary,
         tags=",".join(posting.tags) if posting.tags else None,
         description=posting.description,

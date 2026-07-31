@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
-from sqlalchemy import or_
+from sqlalchemy import case, or_
 
 from ..database import db
 from ..matching import build_scorer, job_text
@@ -38,6 +38,7 @@ def list_jobs():
     remote_type = (request.args.get("remote_type") or "").strip().lower()
     experience_level = (request.args.get("experience_level") or "").strip().lower()
     category = (request.args.get("category") or "").strip().lower()
+    include_paywalled = (request.args.get("include_paywalled") or "0").strip().lower() in {"1", "true", "yes"}
     limit = min(request.args.get("limit", default=100, type=int), 500)
     offset = max(request.args.get("offset", default=0, type=int), 0)
 
@@ -65,10 +66,19 @@ def list_jobs():
         query = query.filter(ScrapedJob.experience_level == experience_level)
     if category in VALID_CATEGORIES:
         query = query.filter(ScrapedJob.category == category)
+    # Compute hidden-paywalled count against the same filter set for the UI hint.
+    paywalled_hidden = 0
+    if not include_paywalled:
+        paywalled_hidden = query.filter(ScrapedJob.accessibility == "paywalled").count()
+        query = query.filter(ScrapedJob.accessibility != "paywalled")
 
     total = query.count()
+    # When paywalled jobs are included, push them to the bottom so free ones
+    # dominate the top of the ranking.
+    paywall_rank = case((ScrapedJob.accessibility == "paywalled", 1), else_=0)
     jobs = (
         query.order_by(
+            paywall_rank.asc(),
             ScrapedJob.posted_at.is_(None),
             ScrapedJob.posted_at.desc(),
             ScrapedJob.scraped_at.desc(),
@@ -86,4 +96,9 @@ def list_jobs():
     else:
         result = [j.to_dict() for j in jobs]
 
-    return jsonify({"total": total, "count": len(result), "jobs": result})
+    return jsonify({
+        "total": total,
+        "count": len(result),
+        "paywalled_hidden": paywalled_hidden,
+        "jobs": result,
+    })
