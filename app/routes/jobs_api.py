@@ -20,10 +20,37 @@ logger = logging.getLogger(__name__)
 jobs_api_bp = Blueprint("jobs_api", __name__)
 
 
+# All the Indian cities we treat as "in India" — used both as an umbrella
+# expansion for the token "india" and as individual known city names.
+INDIA_CITIES: tuple[str, ...] = (
+    "bangalore", "bengaluru",
+    "mumbai", "bombay",
+    "delhi", "new delhi",
+    "hyderabad",
+    "chennai", "madras",
+    "pune",
+    "kolkata", "calcutta",
+    "gurgaon", "gurugram",
+    "noida",
+    "ahmedabad",
+    "jaipur",
+    "kochi", "cochin",
+    "trivandrum", "thiruvananthapuram",
+    "coimbatore",
+    "chandigarh",
+    "indore",
+    "bhubaneswar",
+    "vadodara",
+    "nagpur",
+    "lucknow",
+)
+
 # Common Indian city name variations and typos. Each entry expands to the set
 # of canonical forms we should also search for. Keep the misspelling as a key
 # and the correct spellings in the tuple.
 LOCATION_ALIASES: dict[str, tuple[str, ...]] = {
+    "india":      INDIA_CITIES,   # umbrella: any Indian city counts as "india"
+    "bharat":     INDIA_CITIES,
     "bangalore":  ("bengaluru",),
     "bengaluru":  ("bangalore",),
     "banglore":   ("bangalore", "bengaluru"),   # missing 'a' — very common typo
