@@ -6,7 +6,13 @@ from sqlalchemy import or_
 
 from ..database import db
 from ..matching import build_scorer, job_text
-from ..models import VALID_REMOTE_TYPES, Profile, ScrapedJob
+from ..models import (
+    VALID_CATEGORIES,
+    VALID_EXPERIENCE_LEVELS,
+    VALID_REMOTE_TYPES,
+    Profile,
+    ScrapedJob,
+)
 from ..scrapers import run_all_scrapers
 
 logger = logging.getLogger(__name__)
@@ -30,6 +36,8 @@ def list_jobs():
     company = (request.args.get("company") or "").strip()
     days = request.args.get("days", type=int)
     remote_type = (request.args.get("remote_type") or "").strip().lower()
+    experience_level = (request.args.get("experience_level") or "").strip().lower()
+    category = (request.args.get("category") or "").strip().lower()
     limit = min(request.args.get("limit", default=100, type=int), 500)
     offset = max(request.args.get("offset", default=0, type=int), 0)
 
@@ -53,6 +61,10 @@ def list_jobs():
         )
     if remote_type in VALID_REMOTE_TYPES and remote_type != "unknown":
         query = query.filter(ScrapedJob.remote_type == remote_type)
+    if experience_level in VALID_EXPERIENCE_LEVELS and experience_level != "unknown":
+        query = query.filter(ScrapedJob.experience_level == experience_level)
+    if category in VALID_CATEGORIES:
+        query = query.filter(ScrapedJob.category == category)
 
     total = query.count()
     jobs = (

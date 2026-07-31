@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from ..classifier import classify_category, classify_experience
 from ..database import db
 from ..models import ScrapedJob
 from .arbeitnow import ArbeitnowScraper
@@ -25,6 +26,11 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
         source=posting.source, external_id=posting.external_id
     ).first()
 
+    experience_level = classify_experience(
+        posting.title or "", posting.description or "", posting.tags or []
+    )
+    category = classify_category(posting.title or "", posting.tags or [])
+
     if existing:
         changed = False
         for attr, val in [
@@ -32,6 +38,8 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
             ("company", posting.company),
             ("location", posting.location),
             ("remote_type", posting.remote_type or "unknown"),
+            ("experience_level", experience_level),
+            ("category", category),
             ("salary", posting.salary),
             ("description", posting.description),
             ("url", posting.url),
@@ -50,6 +58,8 @@ def _upsert(posting: JobPosting) -> tuple[bool, bool]:
         company=posting.company,
         location=posting.location,
         remote_type=posting.remote_type or "unknown",
+        experience_level=experience_level,
+        category=category,
         salary=posting.salary,
         tags=",".join(posting.tags) if posting.tags else None,
         description=posting.description,
