@@ -5,7 +5,7 @@
   <div class="flex items-center justify-between flex-wrap gap-4">
     <div>
       <h1 class="text-2xl font-bold">Jobs Dashboard</h1>
-      <p class="text-sm text-slate-500 dark:text-slate-400">Remote and onsite roles from RemoteOK, WeWorkRemotely, Arbeitnow, and Hacker News "Who is hiring".</p>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Remote and onsite roles from RemoteOK, WeWorkRemotely, Arbeitnow, Remotive, The Muse (incl. Bangalore/Mumbai/Delhi/Hyderabad/Chennai/Pune), and Hacker News "Who is hiring".</p>
     </div>
     <button id="scrape-btn"
       class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-md shadow-sm disabled:opacity-60">
@@ -62,5 +62,5 @@
 
 {% endblock %}
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ asset_version }}"></script>
 {% endblock %}
