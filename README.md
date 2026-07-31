@@ -26,10 +26,11 @@ Built as a portfolio project to demonstrate end-to-end fluency: SQLAlchemy model
 ## Features
 
 **Dashboard**
-- Aggregates jobs from four public, unauthenticated sources
-- Full-text search across title, description, and tags
-- Filter by company, date posted, and remote/onsite/hybrid
-- Colored badges per role (Remote / Onsite / Hybrid / Unknown)
+- Aggregates jobs from six public, unauthenticated sources — global remote, onsite worldwide, and onsite India
+- Full-text search across title, location, description, and tags (type "Bangalore" to filter India jobs)
+- Filter by company, date posted, remote/onsite/hybrid, experience level, category
+- Colored badges per role (category · remote type · experience · match %)
+- Hides subscription-only listings by default; a checkbox brings them back at the bottom with a red "Subscription" badge
 - Per-job **Match %** once your profile is set
 
 **Kanban tracker**
@@ -61,14 +62,18 @@ Built as a portfolio project to demonstrate end-to-end fluency: SQLAlchemy model
 
 ## Data sources
 
-| Source          | Access                        | Type                |
-| --------------- | ----------------------------- | ------------------- |
-| RemoteOK        | `https://remoteok.com/api`    | Public JSON, remote |
-| WeWorkRemotely  | `weworkremotely.com/…/*.rss`  | Public RSS, remote  |
-| Arbeitnow       | `arbeitnow.com/api/job-board-api` | Public JSON, remote + onsite (global) |
-| Hacker News     | Algolia HN Search + HN Firebase API | Public JSON, remote + onsite |
+| Source          | Access                                        | Type                                  |
+| --------------- | --------------------------------------------- | ------------------------------------- |
+| RemoteOK        | `https://remoteok.com/api`                    | Public JSON, remote                   |
+| WeWorkRemotely  | `weworkremotely.com/…/*.rss`                  | Public RSS, remote                    |
+| Arbeitnow       | `arbeitnow.com/api/job-board-api`             | Public JSON, remote + onsite (global) |
+| Remotive        | `remotive.com/api/remote-jobs`                | Public JSON, remote (broad categories)|
+| The Muse        | `themuse.com/api/public/jobs` (multi-pass)    | Public JSON, remote + onsite; global + India cities (Bangalore, Mumbai, Delhi, Hyderabad, Chennai, Pune) |
+| Hacker News     | Algolia HN Search + HN Firebase API           | Public JSON, remote + onsite          |
 
-All four are unauthenticated public endpoints. Every request goes through a shared HTTP wrapper with configurable timeout, exponential backoff, and 429 handling.
+All six are unauthenticated public endpoints. Every request goes through a shared HTTP wrapper with configurable timeout, exponential backoff, and 429 handling.
+
+**Note on India coverage.** The major Indian job sites (Naukri, LinkedIn, Indeed India, Foundit, Instahyre, Hirect) require authentication or actively block anonymous scrapers with Cloudflare Turnstile / CAPTCHAs, so they can't be integrated under the zero-auth constraint. India-focused onsite coverage comes primarily from The Muse's city-specific location passes.
 
 ---
 

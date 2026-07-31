@@ -51,6 +51,7 @@ def list_jobs():
                 ScrapedJob.title.ilike(needle),
                 ScrapedJob.description.ilike(needle),
                 ScrapedJob.tags.ilike(needle),
+                ScrapedJob.location.ilike(needle),
             )
         )
     if company:
