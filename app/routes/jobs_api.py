@@ -20,6 +20,56 @@ logger = logging.getLogger(__name__)
 jobs_api_bp = Blueprint("jobs_api", __name__)
 
 
+# Common Indian city name variations and typos. Each entry expands to the set
+# of canonical forms we should also search for. Keep the misspelling as a key
+# and the correct spellings in the tuple.
+LOCATION_ALIASES: dict[str, tuple[str, ...]] = {
+    "bangalore":  ("bengaluru",),
+    "bengaluru":  ("bangalore",),
+    "banglore":   ("bangalore", "bengaluru"),   # missing 'a' — very common typo
+    "bangaluru":  ("bangalore", "bengaluru"),   # spelling drift
+    "mumbai":     ("bombay",),
+    "bombay":     ("mumbai",),
+    "kolkata":    ("calcutta",),
+    "calcutta":   ("kolkata",),
+    "chennai":    ("madras",),
+    "madras":     ("chennai",),
+    "gurgaon":    ("gurugram",),
+    "gurugram":   ("gurgaon",),
+    "trivandrum": ("thiruvananthapuram",),
+    "pondicherry": ("puducherry",),
+    "puducherry":  ("pondicherry",),
+}
+
+
+def _search_terms(token: str) -> set[str]:
+    """Return the set of substrings we should search for given one raw token."""
+    lowered = token.lower()
+    aliases = LOCATION_ALIASES.get(lowered, ())
+    return {lowered, *aliases}
+
+
+def _q_filter_clauses(q: str):
+    """Tokenize q into an AND across tokens, each token expanded via aliases."""
+    tokens = [t for t in q.strip().split() if t]
+    if not tokens:
+        return []
+    and_clauses = []
+    for token in tokens:
+        variants = _search_terms(token)
+        or_pieces = []
+        for variant in variants:
+            needle = f"%{variant}%"
+            or_pieces.extend([
+                ScrapedJob.title.ilike(needle),
+                ScrapedJob.description.ilike(needle),
+                ScrapedJob.tags.ilike(needle),
+                ScrapedJob.location.ilike(needle),
+            ])
+        and_clauses.append(or_(*or_pieces))
+    return and_clauses
+
+
 @jobs_api_bp.route("/scrape", methods=["POST"])
 def trigger_scrape():
     try:
@@ -45,15 +95,8 @@ def list_jobs():
     query = ScrapedJob.query
 
     if q:
-        needle = f"%{q}%"
-        query = query.filter(
-            or_(
-                ScrapedJob.title.ilike(needle),
-                ScrapedJob.description.ilike(needle),
-                ScrapedJob.tags.ilike(needle),
-                ScrapedJob.location.ilike(needle),
-            )
-        )
+        for clause in _q_filter_clauses(q):
+            query = query.filter(clause)
     if company:
         query = query.filter(ScrapedJob.company.ilike(f"%{company}%"))
     if days and days > 0:
