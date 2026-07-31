@@ -1,10 +1,10 @@
 (() => {
   const COLUMNS = [
-    { key: "to_apply",     label: "To Apply",     accent: "bg-slate-100  border-slate-300" },
-    { key: "applied",      label: "Applied",      accent: "bg-blue-50    border-blue-300"  },
-    { key: "interviewing", label: "Interviewing", accent: "bg-amber-50   border-amber-300" },
-    { key: "offer",        label: "Offer",        accent: "bg-emerald-50 border-emerald-300" },
-    { key: "rejected",     label: "Rejected",     accent: "bg-rose-50    border-rose-300"  },
+    { key: "to_apply",     label: "To Apply",     accent: "bg-slate-100  dark:bg-slate-800/60  border-slate-300  dark:border-slate-700" },
+    { key: "applied",      label: "Applied",      accent: "bg-blue-50    dark:bg-blue-950/40   border-blue-300   dark:border-blue-800"  },
+    { key: "interviewing", label: "Interviewing", accent: "bg-amber-50   dark:bg-amber-950/40  border-amber-300  dark:border-amber-800" },
+    { key: "offer",        label: "Offer",        accent: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800" },
+    { key: "rejected",     label: "Rejected",     accent: "bg-rose-50    dark:bg-rose-950/40   border-rose-300   dark:border-rose-800"  },
   ];
 
   const board       = document.getElementById("board");
@@ -40,11 +40,11 @@
     return `
       <section class="kanban-col rounded-lg border ${col.accent} p-3" data-status="${col.key}">
         <header class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-slate-800">${col.label}</h3>
-          <span class="text-xs font-medium bg-white text-slate-600 px-2 py-0.5 rounded-full">${colJobs.length}</span>
+          <h3 class="font-semibold text-slate-800 dark:text-slate-100">${col.label}</h3>
+          <span class="text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">${colJobs.length}</span>
         </header>
         <div class="space-y-2">
-          ${colJobs.map(cardHtml).join("") || `<p class="text-xs text-slate-400 text-center py-8">Drop a job here</p>`}
+          ${colJobs.map(cardHtml).join("") || `<p class="text-xs text-slate-400 dark:text-slate-500 text-center py-8">Drop a job here</p>`}
         </div>
       </section>
     `;
@@ -56,25 +56,25 @@
     ).join("");
     return `
       <article draggable="true" data-id="${job.id}"
-        class="kanban-card bg-white rounded-md shadow-sm p-3 border border-slate-200">
+        class="kanban-card bg-white dark:bg-slate-900 rounded-md shadow-sm p-3 border border-slate-200 dark:border-slate-700">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <h4 class="font-medium text-sm truncate">${escapeHtml(job.title)}</h4>
-            <p class="text-xs text-slate-500 truncate">${escapeHtml(job.company)}</p>
+            <h4 class="font-medium text-sm truncate text-slate-900 dark:text-slate-100">${escapeHtml(job.title)}</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${escapeHtml(job.company)}</p>
           </div>
           <button data-delete="${job.id}" title="Delete"
-            class="text-slate-400 hover:text-rose-600 text-lg leading-none">&times;</button>
+            class="text-slate-400 dark:text-slate-500 hover:text-rose-600 text-lg leading-none">&times;</button>
         </div>
-        ${job.salary ? `<p class="text-xs text-emerald-600 mt-1">${escapeHtml(job.salary)}</p>` : ""}
-        ${job.date_applied ? `<p class="text-xs text-slate-400 mt-1">Applied ${fmtDate(job.date_applied)}</p>` : ""}
-        ${job.notes ? `<p class="text-xs text-slate-600 mt-2 line-clamp-3">${escapeHtml(job.notes)}</p>` : ""}
+        ${job.salary ? `<p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">${escapeHtml(job.salary)}</p>` : ""}
+        ${job.date_applied ? `<p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Applied ${fmtDate(job.date_applied)}</p>` : ""}
+        ${job.notes ? `<p class="text-xs text-slate-600 dark:text-slate-300 mt-2 line-clamp-3">${escapeHtml(job.notes)}</p>` : ""}
         <div class="mt-2 flex items-center gap-2">
           <select data-status="${job.id}"
-            class="text-xs border rounded px-1 py-0.5 flex-1 bg-slate-50">
+            class="filter-input text-xs border rounded px-1 py-0.5 flex-1 bg-slate-50">
             ${statusOptions}
           </select>
           ${job.url ? `<a href="${escapeHtml(job.url)}" target="_blank" rel="noopener noreferrer"
-            class="text-xs text-indigo-600 hover:underline">Link</a>` : ""}
+            class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Link</a>` : ""}
         </div>
       </article>
     `;

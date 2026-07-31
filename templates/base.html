@@ -4,12 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Job Tracker{% endblock %}</title>
+
+  <script>
+    // Apply saved theme before Tailwind loads to avoid flash-of-wrong-theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) { /* localStorage blocked — ignore */ }
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: "class" };</script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased min-h-screen">
-  <nav class="bg-slate-900 text-slate-100 shadow-lg">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen transition-colors">
+  <nav class="bg-slate-900 dark:bg-black text-slate-100 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
       <a href="/" class="font-bold text-lg tracking-tight text-white">JobTracker</a>
       <div class="flex gap-1 flex-1">
@@ -23,6 +37,17 @@
         {% endfor %}
       </div>
       <span id="global-status" class="text-xs text-slate-400"></span>
+      <button id="theme-toggle" type="button" title="Toggle dark / light"
+              aria-label="Toggle theme"
+              class="p-1.5 rounded-md text-slate-300 hover:bg-slate-800 hover:text-white transition">
+        <svg id="theme-icon-sun" class="w-5 h-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg id="theme-icon-moon" class="w-5 h-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
     </div>
   </nav>
 

@@ -3,30 +3,30 @@
 {% block content %}
 <div class="mb-6">
   <h1 class="text-2xl font-bold">Your Profile</h1>
-  <p class="text-sm text-slate-500">
+  <p class="text-sm text-slate-500 dark:text-slate-400">
     Paste your resume text and add explicit skill keywords. This powers Match Score % on the dashboard.
   </p>
 </div>
 
-<div class="bg-white p-6 rounded-lg shadow-sm space-y-5">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm space-y-5">
   <div>
     <label class="block text-sm font-medium mb-1">Resume text</label>
     <textarea id="resume-text" rows="14" placeholder="Paste your resume here…"
-      class="w-full border rounded-md px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
-    <p class="text-xs text-slate-500 mt-1">
+      class="filter-input w-full border rounded-md px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
       Plain text works best. Copy/paste from your PDF or Word doc.
     </p>
   </div>
   <div>
     <label class="block text-sm font-medium mb-1">Skill keywords (comma-separated)</label>
     <input id="keywords" type="text" placeholder="python, react, aws, postgres, tailwind"
-      class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-    <p class="text-xs text-slate-500 mt-1">
+      class="filter-input w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
       These get extra weight in the match score.
     </p>
   </div>
   <div class="flex items-center justify-between">
-    <span id="last-saved" class="text-xs text-slate-500"></span>
+    <span id="last-saved" class="text-xs text-slate-500 dark:text-slate-400"></span>
     <button id="save-btn"
       class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-md">
       Save Profile

@@ -73,3 +73,30 @@ window.matchBadgeClass = function matchBadgeClass(score) {
   if (score >= 35) return "match-badge-mid";
   return "match-badge-low";
 };
+
+// Theme toggle — persisted in localStorage. Pre-paint sync happens in base.html.
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+
+  function currentTheme() {
+    return root.classList.contains("dark") ? "dark" : "light";
+  }
+  function applyTheme(theme) {
+    if (theme === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
+    try { localStorage.setItem("theme", theme); } catch (e) { /* ignore */ }
+  }
+  btn.addEventListener("click", () => {
+    applyTheme(currentTheme() === "dark" ? "light" : "dark");
+  });
+
+  // Follow OS changes only if user hasn't explicitly chosen.
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener?.("change", (e) => {
+    try {
+      if (!localStorage.getItem("theme")) applyTheme(e.matches ? "dark" : "light");
+    } catch (_) { /* ignore */ }
+  });
+})();

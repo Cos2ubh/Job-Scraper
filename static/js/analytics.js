@@ -18,10 +18,10 @@
 
   function kpiCard(label, value, sub) {
     return `
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <p class="text-xs uppercase tracking-wide text-slate-500">${label}</p>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">${label}</p>
         <p class="text-2xl font-bold mt-1">${value}</p>
-        ${sub ? `<p class="text-xs text-slate-500 mt-1">${sub}</p>` : ""}
+        ${sub ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${sub}</p>` : ""}
       </div>
     `;
   }
@@ -42,14 +42,18 @@
       kpiCard("Offer Rate",      `${d.offer_rate_pct}%`,           `${d.offer_total} offers`),
     ].join("");
 
+    const isDark = document.documentElement.classList.contains("dark");
+    const gridColor = isDark ? "#334155" : "#e2e8f0";
+    const tickColor = isDark ? "#cbd5e1" : "#475569";
+
     topCompEl.innerHTML = (d.top_companies || []).length
       ? d.top_companies.map(c => `
           <li class="flex items-center justify-between py-2">
             <span>${escapeHtml(c.company)}</span>
-            <span class="text-slate-500">${c.count}</span>
+            <span class="text-slate-500 dark:text-slate-400">${c.count}</span>
           </li>
         `).join("")
-      : `<li class="text-slate-400 py-3 text-center">No applications tracked yet.</li>`;
+      : `<li class="text-slate-400 dark:text-slate-500 py-3 text-center">No applications tracked yet.</li>`;
 
     // Timeline (bar chart)
     const tl = d.timeline_30d || [];
@@ -68,7 +72,10 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0, color: tickColor }, grid: { color: gridColor } },
+          x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+        },
         plugins: { legend: { display: false } },
       },
     });
@@ -90,7 +97,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: "bottom" } },
+        plugins: { legend: { position: "bottom", labels: { color: tickColor } } },
       },
     });
   }

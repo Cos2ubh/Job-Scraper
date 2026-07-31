@@ -5,7 +5,7 @@
   <div class="flex items-center justify-between flex-wrap gap-4">
     <div>
       <h1 class="text-2xl font-bold">Jobs Dashboard</h1>
-      <p class="text-sm text-slate-500">Remote and onsite roles from RemoteOK, WeWorkRemotely, Arbeitnow, and Hacker News "Who is hiring".</p>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Remote and onsite roles from RemoteOK, WeWorkRemotely, Arbeitnow, and Hacker News "Who is hiring".</p>
     </div>
     <button id="scrape-btn"
       class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-md shadow-sm disabled:opacity-60">
@@ -14,18 +14,32 @@
   </div>
 </div>
 
-<div class="bg-white p-4 rounded-lg shadow-sm mb-6 grid grid-cols-1 sm:grid-cols-5 gap-3">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
   <input id="filter-q"       type="text"   placeholder="Search title / description…"
-         class="border rounded-md px-3 py-2 sm:col-span-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+         class="filter-input lg:col-span-2 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
   <input id="filter-company" type="text"   placeholder="Company contains…"
-         class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-  <select id="filter-remote" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-    <option value="">All jobs</option>
+         class="filter-input border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+  <select id="filter-remote" class="filter-input border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+    <option value="">All (remote+onsite)</option>
     <option value="remote">Remote only</option>
     <option value="onsite">Onsite only</option>
     <option value="hybrid">Hybrid only</option>
   </select>
-  <select id="filter-days" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+  <select id="filter-experience" class="filter-input border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+    <option value="">Any experience</option>
+    <option value="fresher">Fresher / Entry-level</option>
+    <option value="mid">Mid-level</option>
+    <option value="senior">Senior</option>
+  </select>
+  <select id="filter-category" class="filter-input border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+    <option value="">Any category</option>
+    <option value="technical">Technical</option>
+    <option value="design">Design</option>
+    <option value="product">Product</option>
+    <option value="business">Business / Non-tech</option>
+    <option value="other">Other</option>
+  </select>
+  <select id="filter-days" class="filter-input border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
     <option value="">Any date</option>
     <option value="1">Last 24h</option>
     <option value="3">Last 3 days</option>
@@ -35,7 +49,7 @@
   </select>
 </div>
 
-<div id="jobs-meta" class="text-xs text-slate-500 mb-2"></div>
+<div id="jobs-meta" class="text-xs text-slate-500 dark:text-slate-400 mb-2"></div>
 <div id="jobs-list" class="grid gap-3"></div>
 
 {% endblock %}
